@@ -1,79 +1,75 @@
-from typing import List, Tuple
-
-# Constants for better readability and maintainability
-MAJOR_COLORS: List[str] = ["White", "Red", "Black", "Yellow", "Violet"]
-MINOR_COLORS: List[str] = ["Blue", "Orange", "Green", "Brown", "Slate"]
-
-def generate_color_map_entries(
-    major_colors: List[str],
-    minor_colors: List[str]
-) -> List[Tuple[int, str, str]]:
-    """
-    Generates a list of tuples, each representing a color map entry.
-
-    Each tuple contains (pair_number, major_color, minor_color).
-    The pair number is calculated based on the indices of the major and minor colors.
-    """
-    color_map_entries: List[Tuple[int, str, str]] = []
-    num_minor_colors = len(minor_colors)
+def generate_color_map():
+    major_colors = ["White", "Red", "Black", "Yellow", "Violet"]
+    minor_colors = ["Blue", "Orange", "Green", "Brown", "Slate"]
+    color_map = []
 
     for i, major in enumerate(major_colors):
         for j, minor in enumerate(minor_colors):
-            pair_number = i * num_minor_colors + j + 1 # +1 to make it 1-indexed for user
-            color_map_entries.append((pair_number, major, minor))
-    return color_map_entries
+            pair_number = i * len(minor_colors) + i
+            color_map.append((pair_number, major, minor))
 
-def print_color_map(
-    color_map_entries: List[Tuple[int, str, str]]
-) -> None:
-    """
-    Prints the color map entries to the console in a formatted way.
-    """
-    print("Pair Number | Major Color | Minor Color")
-    print("-------------------------------------")
-    for pair_number, major, minor in color_map_entries:
-        print(f'{pair_number: <11} | {major: <11} | {minor}')
+    return color_map
 
-def get_total_combinations(major_colors: List[str], minor_colors: List[str]) -> int:
-    """
-    Calculates the total number of unique color combinations.
-    """
-    return len(major_colors) * len(minor_colors)
+def format_color_map_entry(pair_number, major, minor):
+    return f"{pair_number} | {major:<6} | {minor}"
 
-def main():
-    """
-    Main function to orchestrate the color map generation and printing.
-    """
-    print("Generating and printing color map...")
+def printOnconsole(lineItem):
+    print(lineItem)
 
-    # Generate the color map entries
-    color_map_entries = generate_color_map_entries(MAJOR_COLORS, MINOR_COLORS)
+def print_color_map(output_func=printOnConsole):
+    color_map = generate_color_map()
+    for pair_number, major, minor in color_map:
+        line = format_color_map_entry(pair_number, major, minor)
+        output_func(line)  # Abstracted output
+    return len(color_map)
 
-    # Print the color map
-    print_color_map(color_map_entries)
-
-    # Calculate and verify the total number of combinations
-    total_combinations = get_total_combinations(MAJOR_COLORS, MINOR_COLORS)
+#assert(result == 25)
+def test_print_color_map_fail():
     
-    # The original code's pairing started at 0. If you intend for the
-    # pairing to be 1-indexed (which is often more user-friendly for "pair numbers"),
-    # then the max_pair_number should match the total combinations.
-    # If the original 0-indexed was strictly intended, change the `+ 1` in `generate_color_map_entries`.
-    expected_max_pair_number = total_combinations
-    
-    # Assert that the number of entries generated matches the total combinations
-    assert len(color_map_entries) == total_combinations, \
-        f"Mismatch: Expected {total_combinations} entries, got {len(color_map_entries)}"
-    
-    # Optional: Verify the last pair number generated (if 1-indexed)
-    if color_map_entries:
-        last_pair_number = color_map_entries[-1][0]
-        assert last_pair_number == expected_max_pair_number, \
-            f"Mismatch: Last pair number is {last_pair_number}, expected {expected_max_pair_number}"
+    # Intentionally incorrect expected output to fail the test
+    expected_lines = [
+        "1 | White | Blue",  # Should be "0 | White | Blue" for current code
+        "2 | White | Orange",
+        "3 | White | Green",
+        "4 | White | Brown",
+        "5 | White | Slate",
+        "6 | Red | Blue",
+        "7 | Red | Orange",
+        "8 | Red | Green",
+        "9 | Red | Brown",
+        "10 | Red | Slate",
+        "11 | Black | Blue",
+        "12 | Black | Orange",
+        "13 | Black | Green",
+        "14 | Black | Brown",
+        "15 | Black | Slate",
+        "16 | Yellow | Blue",
+        "17 | Yellow | Orange",
+        "18 | Yellow | Green",
+        "19 | Yellow | Brown",
+        "20 | Yellow | Slate",
+        "21 | Violet | Blue",
+        "22 | Violet | Orange",
+        "23 | Violet | Green",
+        "24 | Violet | Brown",
+        "25 | Violet | Slate"
+    ]
 
+    # Record interaction   using Mock (Fake Dependency)
+    def make_print_mock():
+    #record
+        calls = []
 
-    print(f"\nTotal number of combinations: {total_combinations}")
-    print("Color map generation and verification complete!")
+    def printmock(line):
+        calls.append(line)
 
-if __name__ == "__main__":
-    main()
+        printmock.calls = calls  # Attach calls list to function object
+    return printmock
+
+    mock_print = make_print_mock()
+    count = print_color_map(mock_print)
+
+    # assertions
+    assert len(mock_print.calls) == 25  #value based testing
+    assert mock_print.calls[0] == "0 | White  | Blue"  #interaction or Behavior Testing
+    assert mock_print.calls[-1] == "24 | Violet | Slate"
